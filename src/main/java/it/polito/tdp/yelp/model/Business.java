@@ -1,5 +1,7 @@
 package it.polito.tdp.yelp.model;
 
+import com.javadocmd.simplelatlng.LatLng;
+
 public class Business {
 	private String businessId;
 	private String fullAddress;
@@ -13,10 +15,11 @@ public class Business {
 	private double longitude;
 	private String state;
 	private double stars;
+	private LatLng posizione;
 	
 	
 	public Business(String businessId, String fullAddress, String active, String categories, String city, int reviewCount,
-			String businessName, String neighborhoods, double latitude, double longitude, String state, double stars) {
+			String businessName, String neighborhoods, double latitude, double longitude, String state, double stars,LatLng posizione) {
 		super();
 		this.businessId = businessId;
 		this.fullAddress = fullAddress;
@@ -30,6 +33,7 @@ public class Business {
 		this.longitude = longitude;
 		this.state = state;
 		this.stars = stars;
+		this.posizione= posizione;
 	}
 	
 	public String getBusinessId() {
@@ -105,6 +109,15 @@ public class Business {
 		this.stars = stars;
 	}
 
+	
+	public LatLng getPosizione() {
+		return posizione;
+	}
+
+	public void setPosizione(LatLng posizione) {
+		this.posizione = posizione;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -130,6 +143,12 @@ public class Business {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return this.businessName;
+	}
+	
+	
 
 	
 }

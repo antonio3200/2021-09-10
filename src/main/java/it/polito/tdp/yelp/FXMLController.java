@@ -5,7 +5,11 @@
 package it.polito.tdp.yelp;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.yelp.model.Business;
+import it.polito.tdp.yelp.model.Business_Distanza;
 import it.polito.tdp.yelp.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,10 +41,10 @@ public class FXMLController {
     private TextField txtX2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbCitta"
-    private ComboBox<?> cmbCitta; // Value injected by FXMLLoader
+    private ComboBox<String> cmbCitta; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbB1"
-    private ComboBox<?> cmbB1; // Value injected by FXMLLoader
+    private ComboBox<String> cmbB1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbB2"
     private ComboBox<?> cmbB2; // Value injected by FXMLLoader
@@ -50,11 +54,40 @@ public class FXMLController {
     
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	txtResult.clear();
+    	String citta= cmbCitta.getValue();
+    	if(citta==null) {
+    		txtResult.setText("Selezionare una citta dal box citta");
+    		return;
+    	}
+    	this.model.creaGrafo(citta);
+    	for(Business b : this.model.getVertici()) {
+    		this.cmbB1.getItems().add(b.toString());
+    	}
+    	txtResult.appendText("Grafo creato ! \n");
+    	txtResult.appendText("Numero vertici : "+this.model.getVertex()+"\n");
+    	txtResult.appendText("Numero archi : "+this.model.getEdge());
     	
     }
 
     @FXML
     void doCalcolaLocaleDistante(ActionEvent event) {
+    	txtResult.clear();
+    	String bus= this.cmbB1.getValue();
+    	if(bus==null) {
+    		txtResult.setText("Selezionare un locale dal box b1");
+    		return;
+    	}
+    	Business b= this.model.getBusinessNome(bus);
+    	if(b==null) {
+    		txtResult.setText("Locale non presente nel grafo");
+    		return;
+    	}
+    	List<Business_Distanza> lontani= this.model.getLocaliDistanza(b);
+    	txtResult.appendText("Locali più distanti dal locale "+b.getBusinessName()+"\n");
+    	for(Business_Distanza bd :lontani) {
+    		txtResult.appendText(bd.toString()+"\n");
+    	}
 
     	
     }
@@ -80,5 +113,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.cmbCitta.getItems().addAll(this.model.getCitta());
     }
 }

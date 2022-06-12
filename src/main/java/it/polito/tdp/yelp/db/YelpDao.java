@@ -5,7 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import com.javadocmd.simplelatlng.LatLng;
+
 import it.polito.tdp.yelp.model.Business;
 import it.polito.tdp.yelp.model.Review;
 import it.polito.tdp.yelp.model.User;
@@ -22,7 +26,7 @@ public class YelpDao {
 			PreparedStatement st = conn.prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			while (res.next()) {
-
+				LatLng pos= new LatLng(res.getDouble("latitude"),res.getDouble("longitude"));
 				Business business = new Business(res.getString("business_id"), 
 						res.getString("full_address"),
 						res.getString("active"),
@@ -34,7 +38,7 @@ public class YelpDao {
 						res.getDouble("latitude"),
 						res.getDouble("longitude"),
 						res.getString("state"),
-						res.getDouble("stars"));
+						res.getDouble("stars"),pos);
 				result.add(business);
 			}
 			res.close();
@@ -111,5 +115,60 @@ public class YelpDao {
 		}
 	}
 	
+	public List<String> getCitta(){
+		String sql="SELECT DISTINCT city "
+				+ "FROM business";
+	List<String> result= new LinkedList<String>();
+	Connection conn= DBConnect.getConnection();
+	try {
+		PreparedStatement st= conn.prepareStatement(sql);
+		ResultSet rs= st.executeQuery();
+		while(rs.next()) {
+			result.add(rs.getString("city"));
+		}
+		conn.close();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		throw new RuntimeException("SQL ERROR");
+	}
+	return result;
+	}
+	
+	public List<Business> getBusinessPerCitta(String citta){
+		String sql="SELECT * "
+				+ "FROM business "
+				+ "WHERE city=?";
+		List<Business> result= new LinkedList<Business>();
+		Connection conn= DBConnect.getConnection();
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, citta);
+			ResultSet rs= st.executeQuery();
+			while (rs.next()) {
+				LatLng pos= new LatLng(rs.getDouble("latitude"),rs.getDouble("longitude"));
+				Business business = new Business(rs.getString("business_id"), 
+						rs.getString("full_address"),
+						rs.getString("active"),
+						rs.getString("categories"),
+						rs.getString("city"),
+						rs.getInt("review_count"),
+						rs.getString("business_name"),
+						rs.getString("neighborhoods"),
+						rs.getDouble("latitude"),
+						rs.getDouble("longitude"),
+						rs.getString("state"),
+						rs.getDouble("stars"),
+						pos);
+				result.add(business);
+			}
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("SQL ERROR");
+		}
+		return result;
+	}
 	
 }
